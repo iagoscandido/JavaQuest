@@ -36,7 +36,7 @@ Para compilar e rodar o projeto, são necessários:
 
 ## Instruções de Instalação e Execução
 1. Clonar o repositório:
-   git clone https://github.com/seu-usuario/java-quest.git
+   git clone https://github.com/iagoscandido/JavaQuest.git
 
 2. Acessar o diretório do projeto:
    cd java-quest
