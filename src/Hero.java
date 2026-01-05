@@ -39,8 +39,7 @@ public class Hero extends Entity {
     }
 
     public void drinkPotion() {
-        int maximumHealPoints = 10;
-        int healPoints = 0;
+        int previousHealthPoints = this.healthPoints;
 
         if (this.potions < 1) {
             System.out.println("Você não tem mais poções!");
@@ -49,17 +48,7 @@ public class Hero extends Entity {
         if (isHealValid() && this.potions > 0) {
             this.potions--;
             this.healthPoints = Math.min(this.healthPoints + 10, this.maximumHealthPoints);
-//            if (this.maximumHealthPoints - this.healthPoints >= 10) {
-//                healPoints = maximumHealPoints;
-//                this.healthPoints += healPoints;
-//            } else {
-//                healPoints += (this.maximumHealthPoints -  this.healthPoints);
-//                if (healPoints > maximumHealPoints) {
-//                    healPoints = maximumHealPoints;
-//                }
-//                this.healthPoints += healPoints;
-//            }
-
+            int healPoints = this.healthPoints - previousHealthPoints;
             System.out.printf("\n%s consumiu a poção e curou %d\n", this.getName(), healPoints);
         }
     }
