@@ -1,3 +1,5 @@
+package br.com.sciago;
+
 public abstract class Entity {
     protected String name;
     protected int healthPoints;

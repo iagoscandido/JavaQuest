@@ -1,3 +1,5 @@
+package br.com.sciago;
+
 public class Hero extends Entity {
     private int currentExperiencePoints;
     private int experiencePointsToLevelUp;

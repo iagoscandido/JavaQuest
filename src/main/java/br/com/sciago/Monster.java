@@ -1,3 +1,5 @@
+package br.com.sciago;
+
 import java.util.Random;
 
 public class Monster extends Entity {

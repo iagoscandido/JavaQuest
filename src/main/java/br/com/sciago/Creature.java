@@ -1,3 +1,5 @@
+package br.com.sciago;
+
 public class Creature {
     private final String name;
     private final AbilityScores abilityScores;
