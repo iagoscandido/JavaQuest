@@ -5,14 +5,18 @@ public abstract class Entity {
     protected int strength;
     protected int defense;
     protected int level;
+    protected int energyPoints;
+    protected int maximumEnergyPoints;
 
-    public Entity(String name, int healthPoints, int strength, int defense, int level) {
+    public Entity(String name, int healthPoints, int strength, int defense, int level, int energyPoints) {
         this.name = name;
         this.healthPoints = healthPoints;
         this.maximumHealthPoints = healthPoints;
         this.strength = strength;
         this.defense = defense;
         this.level = level;
+        this.energyPoints = energyPoints;
+        this.maximumEnergyPoints = energyPoints;
     }
 
     public String getName() {
@@ -39,28 +43,56 @@ public abstract class Entity {
         return level;
     }
 
+    public int getEnergyPoints() {
+        return energyPoints;
+    }
+
+    public int getMaximumEnergyPoints() {
+        return maximumEnergyPoints;
+    }
+
     public boolean isAlive() {
         return healthPoints > 0;
     }
 
     public void attack(Entity target) {
-        System.out.printf("%s atacou %s com %d de força%n", this.getName(), target.getName(), this.getStrength());
+        String attackMessage = String.format("força: %d | %s atacou %s", this.getStrength(), this.getName(),
+                target.getName());
+
+        System.out.println(attackMessage);
         target.takeDamage(this.getStrength());
     }
 
-    public void takeDamage(int attackPower) {
-        int damage = attackPower - this.getDefense();
+    public void takeDamage(int damage) {
+        int damageTaken = damage - this.getDefense();
 
-        if (damage < 1) {
-            damage = 1;
-        }
+        if (damageTaken < 1) damageTaken = 1;
 
-        this.healthPoints -= damage;
-        System.out.printf("%S defendeu %d e recebeu %d de dano!%n", this.name , this.defense, damage);
+        this.healthPoints -= damageTaken;
+
+        String damageTakenMessage = String.format("defesa: %d | %s recebeu %d de dano",
+                this.getDefense(),
+                this.getName(),
+                damageTaken);
+
+        System.out.println(damageTakenMessage);
     }
 
     public String displayStatus() {
-        return String.format("Nome: %s | Nível: %d | HP: %d/%d | Força: %d | Defesa: %d ", this.getName(), this.getLevel(),
-                this.getHealthPoints(), this.getMaximumHealthPoints(), this.getStrength(), this.getDefense());
+        return String.format(
+                "Nome: %s | Nível: %d | HP: %d/%d | Força: %d | Defesa: %d | Energia %d/%d ",
+                this.getName(),
+                this.getLevel(),
+                this.getHealthPoints(),
+                this.getMaximumHealthPoints(),
+                this.getStrength(),
+                this.getDefense(),
+                this.getEnergyPoints(),
+                this.getMaximumEnergyPoints()
+        );
+    }
+
+    public void regenerateEnergyPoints() {
+        this.energyPoints = Math.min(this.energyPoints + 2, this.maximumEnergyPoints);
     }
 }
