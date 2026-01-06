@@ -8,7 +8,8 @@ public class Monster extends Entity {
                 5 + (level * 3),
                 2 + level,
                 1 + level,
-                level);
+                level, 10)
+        ;
         this.experiencePointsReward = calculateExperiencePointsReward();
     }
 
