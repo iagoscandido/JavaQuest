@@ -3,61 +3,88 @@ void main() {
 //    System.out.print("Informe seu nome: ");
 //    String playerName = sc.nextLine();
 
+
+    String monsterSpawnedSuccessMessage = "Monstro surgiu!";
+    String combatStartMessage = "Combate iniciado!";
+    String combatEndMessage = "Combate finalizado!";
+
+
     String playerName = "testeName";
 
-    Hero player = new Hero(playerName, 10, 5, 2);
-
-    System.out.println("\n--- Personagem Criado com Sucesso ---");
-    System.out.printf("\nStatus do jogador: %s\n", player.displayStatus());
-
+    Hero player = new Hero(playerName);
+    String characterCreatedMessage = String.format("Personagem: %s criado com sucesso!", player.getName());
+    System.out.println(characterCreatedMessage);
 
     Monster monster = Monster.spawn(player.getLevel());
-    System.out.printf("\nStatus do Monstro: %s\n", monster.displayStatus());
 
+    System.out.println(monsterSpawnedSuccessMessage);
+    System.out.println(monster.displayStatus());
 
-    System.out.println("\n--- Combate iniciado ---");
     int turn = 0;
+    System.out.println(combatStartMessage);
     while (player.isAlive() && monster.isAlive()) {
         turn++;
-        System.out.println("\n--- Inicio do turno: " + turn + "---");
+        String currentTurnMessage = String.format("Turno: %d", turn);
+        String endTurnMessage = "Fim do turno";
+        String optionsMessage = "Ações: 1 - Atacar | 2 - Beber poção | 3 - Ataque Especial (10 EP)";
+        String monsterDefeatedMessage = String.format("%s derrotado! Você recebeu %d Pontos de Experiencia",
+                monster.getName(), monster.getExperiencePointsReward());
+        String playerDefeatedMessage = String.format("Você foi derrotado por: %s", monster.getName());
+
+        System.out.println(currentTurnMessage);
+        System.out.println("Jogador: " + player.displayStatus());
+        System.out.println("Monstro: " + monster.displayStatus());
+        System.out.println();
         System.out.println("Turno do Jogador");
-        System.out.println("\nAções: 1 - Atacar | 2 - Beber poção");
-        int choice = sc.nextInt();
 
-        while (choice < 1 || choice > 2) {
-            System.out.println("Opção inválida.");
-            System.out.println("\nAções: 1 - Atacar | 2 - Beber poção");
-            choice = sc.nextInt();
-        }
+        boolean isTurnEnded = false;
+        while (!isTurnEnded) {
 
-        switch (choice) {
-            case 1:
-                player.attack(monster);
-                break;
-            case 2:
-                player.drinkPotion();
-                break;
+            System.out.println(optionsMessage);
+            int choice = sc.nextInt();
+
+            while (choice != 1 && choice != 2 && choice != 3) {
+                System.out.println("Opção inválida.");
+                System.out.println(optionsMessage);
+                choice = sc.nextInt();
+            }
+
+            switch (choice) {
+                case 1:
+                    player.attack(monster);
+                    isTurnEnded = true;
+                    break;
+                case 2:
+                    if (player.drinkPotion()) isTurnEnded = true;
+                    break;
+                case 3:
+                    if (player.specialAttack(monster)) isTurnEnded = true;
+                    break;
+            }
         }
 
         if (!monster.isAlive()) {
-            System.out.println("\n--- Fim de Jogo! total de turnos: " + turn + " ---");
-            System.out.printf("Vitória, XP recebido: %d%n", monster.getExperiencePointsReward());
             player.gainExperiencePoints(monster.getExperiencePointsReward());
+            System.out.printf(monsterDefeatedMessage);
+            System.out.println(combatEndMessage);
             break;
         }
 
-        System.out.println("\nTurno do Monstro");
+        System.out.println("Turno do Monstro");
         monster.attack(player);
+
         if (!player.isAlive()) {
-            System.out.println("\n--- Fim de Jogo! total de turnos: " + turn + " ---");
-            System.out.println("Derrota/Game Over");
+            System.out.println(playerDefeatedMessage);
+            System.out.println(combatEndMessage);
             break;
         }
-        System.out.println("\nStatus atual:");
-        System.out.println("\n" + player.displayStatus());
-        System.out.println("\n" + monster.displayStatus());
-        System.out.println("\n--- Fim do turno: " + turn + " ---");
 
+//        regeneration phase
+        player.regenerateEnergyPoints();
+        monster.regenerateEnergyPoints();
+
+        System.out.println(endTurnMessage);
     }
+
     sc.close();
 }
