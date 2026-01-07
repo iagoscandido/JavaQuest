@@ -1,6 +1,5 @@
 import br.com.sciago.AbilityScores;
 import br.com.sciago.Creature;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +8,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.IntStream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CreatureTest {
     private AbilityScores defaultScores;
@@ -21,7 +23,7 @@ public class CreatureTest {
     @BeforeEach
     void setUp() {
         defaultScores = new AbilityScores(10, 10, 10, 10, 10, 10);
-        defaultCreature = new Creature("Grog", defaultScores);
+        defaultCreature = new Creature("Bob", defaultScores);
     }
 
     @ParameterizedTest
@@ -34,7 +36,7 @@ public class CreatureTest {
         int expectedMaxHp = 10 + scores.constitutionModifier();
         int actualMaxHp = creature.getMaxHp();
 
-        Assertions.assertEquals(expectedMaxHp, actualMaxHp,
+        assertEquals(expectedMaxHp, actualMaxHp,
                 () -> "failure to score: " + conScore + " (modifier: " + scores.constitutionModifier() + ")");
     }
 
@@ -44,7 +46,7 @@ public class CreatureTest {
         int expectedCurrentHp = 10 + defaultScores.constitutionModifier();
         int actualCurrentHp = defaultCreature.getCurrentHp();
 
-        Assertions.assertEquals(expectedCurrentHp,
+        assertEquals(expectedCurrentHp,
                 actualCurrentHp,
                 "currentHp should be equals to expectedCurrentHp");
     }
@@ -59,7 +61,7 @@ public class CreatureTest {
 
         int actualCurrentHp = defaultCreature.getCurrentHp();
 
-        Assertions.assertEquals(expectedCurrentHp, actualCurrentHp);
+        assertEquals(expectedCurrentHp, actualCurrentHp);
     }
 
     @Test
@@ -73,16 +75,53 @@ public class CreatureTest {
 
         int actualCurrentHp = defaultCreature.getCurrentHp();
 
-        Assertions.assertEquals(expectedCurrentHp, actualCurrentHp);
+        assertEquals(expectedCurrentHp, actualCurrentHp);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {6, 7, 8, 9, 10, 11})
-    public void shouldReturnTrueIfCurrentHpLessOrEqualThanHalfMaxHp(int damage) {
+    @DisplayName("Should set isBloodied to true if Hp is half or less")
+    public void shouldSetIsBloodiedIfHpIsHalfOrLess(int damage) {
 
         defaultCreature.takeDamage(damage);
 
-        Assertions.assertTrue(defaultCreature.isBloodied());
+        assertTrue(defaultCreature.isBloodied());
 
     }
+
+    @ParameterizedTest
+    @MethodSource("abilityScoreRange")
+    @DisplayName("Should calculate AC Correctly")
+    public void shouldCalculateACCorrectly(int dexScore) {
+        AbilityScores scores = new AbilityScores(10, dexScore, 10, 10, 10, 10);
+        Creature creature = new Creature("Test Creature", scores);
+
+        int expectedAC = 10 + scores.dexterityModifier();
+        int currentAC = creature.getArmourClass();
+
+        assertEquals(expectedAC, currentAC);
+    }
+
+    @Test
+    @DisplayName("A successful attack should reduce target HP")
+    void successfulAttackShouldReduceTargetHp() {
+        Creature attacker = new Creature("attacker",
+                new AbilityScores(20, 10, 10, 10, 10, 10));
+        Creature target = new Creature("target",
+                new AbilityScores(10, 1, 10, 10, 10, 10));
+
+        int initialHp = target.getCurrentHp();
+        attacker.attack(target);
+
+        assertTrue(target.getCurrentHp() < initialHp, "Target HP should have been reduced.");
+    }
+
+    @Test
+    @DisplayName("Should set HP to zero when damage is fatal")
+    void shouldSetHPToZeroWhenDamageIsFatal() {
+        defaultCreature.takeDamage(100);
+
+        assertEquals(0, defaultCreature.getCurrentHp(), "hp should be zero when damage is fatal");
+    }
+
 }
