@@ -1,16 +1,23 @@
-import org.junit.jupiter.api.Test;
+import br.com.sciago.AbilityScores;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AbilityScoresTest {
-    @Test
-    void shouldThrowsExceptionWhenScoreIsInvalid() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new AbilityScores(-1, 0, 21, 1, 1, 1),
-                "should throw error when value is either less 1 or greater than 20");
+    @BeforeEach
+    public void setup() {
+        AbilityScores defaultScores = new AbilityScores(10, 10, 10, 10, 10, 10);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0, 21})
+    void shouldThrowsExceptionWhenScoreIsInvalid(int invalidScores) {
+        assertThrows(IllegalArgumentException.class, () ->
+                        new AbilityScores(invalidScores, 10, 10, 10, 10, 10),
+                "Should have thrown IllegalArgumentException: " + invalidScores);
     }
 
     @ParameterizedTest
@@ -26,9 +33,16 @@ public class AbilityScoresTest {
     })
     void shouldCalculateCorrectModifierForEachScore(int score, int expectedModifier) {
 
-        AbilityScores testScores = new AbilityScores(score, 10, 10, 10, 10, 10);
+        AbilityScores testScores = new AbilityScores(score, score, score, score, score, score);
 
-        assertEquals(expectedModifier, testScores.strengthModifier(),
-                () -> "Failure: Score " + score + " should result in modifier: " + expectedModifier);
+        assertAll("modifiers",
+                () -> assertEquals(expectedModifier, testScores.strengthModifier(), "STR failed"),
+                () -> assertEquals(expectedModifier, testScores.dexterityModifier(), "DEX failed"),
+                () -> assertEquals(expectedModifier, testScores.constitutionModifier(), "CON failed"),
+                () -> assertEquals(expectedModifier, testScores.intelligenceModifier(), "INT failed"),
+                () -> assertEquals(expectedModifier, testScores.wisdomModifier(), "WIS failed"),
+                () -> assertEquals(expectedModifier, testScores.charismaModifier(), "CHA failed")
+        );
+
     }
 }

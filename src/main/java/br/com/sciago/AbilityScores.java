@@ -35,13 +35,10 @@ public record AbilityScores(int strength, int dexterity, int constitution, int i
     }
 
     private void validateAbilityScore(String name, int value) {
-        //    business rule score must be between 1 and 20
-        boolean isAbilityScoreValid = value >= 1 && value <= 20;
-
         String errorMessage = String.format("Atributo [%s] com valor inválido: %d. O Player's Handbook (2024) define " +
                 "que scores de aventureiros devem estar entre 1 e 20.\n", name, value);
 
-        if (!isAbilityScoreValid)
+        if (value < 1 || value > 20)
             throw new IllegalArgumentException(errorMessage);
     }
 
