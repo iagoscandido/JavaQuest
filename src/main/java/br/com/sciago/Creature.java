@@ -41,11 +41,15 @@ public class Creature {
         return 10 + modifier;
     }
 
+    public int getAttackBonus() {
+        return abilityScores.strengthModifier();
+    }
+
     public void attack(Creature target) {
         String attackMessage = "%s attacks %s".formatted(this.name, target.name);
         System.out.println(attackMessage);
         int rollAttackDice = Dice.rollD20();
-        int attackScore = rollAttackDice + abilityScores.strengthModifier();
+        int attackScore = rollAttackDice + getAttackBonus();
 
         String attackScoreMessage = "attack score: %d (D20: %d + Mod: %d)".formatted(attackScore, rollAttackDice,
                 abilityScores.strengthModifier());
@@ -85,6 +89,10 @@ public class Creature {
 
     public boolean isBloodied() {
         return (this.currentHp * 2) <= this.maxHp;
+    }
+
+    public boolean isAlive() {
+        return this.currentHp > 0;
     }
 
     public String getSummary() {
