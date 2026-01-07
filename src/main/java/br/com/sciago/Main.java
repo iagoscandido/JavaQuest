@@ -12,7 +12,7 @@ public class Main {
         System.out.println("Slime: " + slime.getSummary());
 
         int turnsCount = 0;
-        while (bob.getCurrentHp() > 0 && slime.getCurrentHp() > 0) {
+        while (bob.isAlive() && slime.isAlive()) {
             turnsCount++;
 
             bob.attack(slime);
@@ -32,8 +32,8 @@ public class Main {
 
         }
         System.out.println("======= COMBAT SUMMARY =======");
-        System.out.println("Bob: " + bob.getSummary());
-        System.out.println("Slime: " + slime.getSummary());
-        System.out.println("Total turns: " + turnsCount);
+        System.out.println(bob.getSummary());
+        System.out.println(slime.getSummary());
+        System.out.println(turnsCount);
     }
 }
