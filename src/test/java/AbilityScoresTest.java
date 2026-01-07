@@ -8,9 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class AbilityScoresTest {
     @Test
     void shouldThrowsExceptionWhenScoreIsInvalid() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new AbilityScores(-1, 0, 21, 1, 1, 1);
-        }, "should throw error when value is either less 1 or greater than 20");
+        assertThrows(IllegalArgumentException.class,
+                () -> new AbilityScores(-1, 0, 21, 1, 1, 1),
+                "should throw error when value is either less 1 or greater than 20");
     }
 
     @ParameterizedTest
