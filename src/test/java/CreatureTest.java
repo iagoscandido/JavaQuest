@@ -1,9 +1,11 @@
 import br.com.sciago.AbilityScores;
 import br.com.sciago.Creature;
+import br.com.sciago.Weapon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -15,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CreatureTest {
     private AbilityScores defaultScores;
     private Creature defaultCreature;
+    private Creature dummy;
+    private Creature gigaChad;
 
     private static IntStream abilityScoreRange() {
         return IntStream.rangeClosed(1, 20);
@@ -24,6 +28,8 @@ public class CreatureTest {
     void setUp() {
         defaultScores = new AbilityScores(10, 10, 10, 10, 10, 10);
         defaultCreature = new Creature("Bob", defaultScores);
+        dummy = new Creature("Dummy", new AbilityScores(1, 1, 1, 1, 1, 1));
+        gigaChad = new Creature("Giga Chad", new AbilityScores(20, 20, 20, 20, 20, 20));
     }
 
     @ParameterizedTest
@@ -119,9 +125,31 @@ public class CreatureTest {
     @Test
     @DisplayName("Should set HP to zero when damage is fatal")
     void shouldSetHPToZeroWhenDamageIsFatal() {
-        defaultCreature.takeDamage(100);
+        defaultCreature.takeDamage(defaultCreature.getMaxHp() + 1);
 
         assertEquals(0, defaultCreature.getCurrentHp(), "hp should be zero when damage is fatal");
+    }
+
+    @ParameterizedTest
+    @EnumSource(Weapon.class)
+    @DisplayName("Should deal damage within expected range")
+    void shouldDealDamageWithinExpectedRange(Weapon weapon) {
+        gigaChad.equip(weapon);
+        int weaponDamage = weapon.rollDamage();
+        int damageModifier = gigaChad.getAbilityScores().getModifier(weapon.getScalingModifier());
+
+        int actualDamage = weaponDamage + damageModifier;
+
+        int minPossibleDamage = 1 + damageModifier;
+        int maxPossibleDamage = weapon.getDamageDie().getSides() + damageModifier;
+
+        int minExpectedDamage = Math.max(0, minPossibleDamage);
+        int maxExpectedDamage = Math.max(0, maxPossibleDamage);
+
+
+        assertTrue(actualDamage >= minExpectedDamage && actualDamage <= maxExpectedDamage,
+                "Failed on weapon: %s Damage: %d out of bounds [%d - %d]".formatted(weapon, actualDamage,
+                        minPossibleDamage, maxPossibleDamage));
     }
 
 }
