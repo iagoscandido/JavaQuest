@@ -1,4 +1,4 @@
-package br.com.sciago;
+package br.com.sciago.model;
 
 public record AbilityScores(int strength, int dexterity, int constitution, int intelligence, int wisdom, int charisma) {
     public AbilityScores {
@@ -45,5 +45,16 @@ public record AbilityScores(int strength, int dexterity, int constitution, int i
     //    business rule mod = (Score - 10) / 2 rounded down.
     private int calculateModifier(int score) {
         return Math.floorDiv(score - 10, 2);
+    }
+
+    public int getModifier(AbilityScore abilityScore) {
+        return switch (abilityScore) {
+            case STRENGTH -> strengthModifier();
+            case DEXTERITY -> dexterityModifier();
+            case CONSTITUTION -> constitutionModifier();
+            case INTELLIGENCE -> intelligenceModifier();
+            case WISDOM -> wisdomModifier();
+            case CHARISMA -> charismaModifier();
+        };
     }
 }
