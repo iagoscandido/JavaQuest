@@ -2,16 +2,28 @@ package br.com.sciago;
 
 public class Main {
     static void main() {
-        AbilityScores bobScores = new AbilityScores(Dice.rollD20(), Dice.rollD20(), Dice.rollD20(), Dice.rollD20(), Dice.rollD20(), Dice.rollD20());
+        AbilityScores bobScores = new AbilityScores(Die.D20.roll(),
+                Die.D20.roll(),
+                Die.D20.roll(),
+                Die.D20.roll(),
+                Die.D20.roll(),
+                Die.D20.roll());
         Creature bob = new Creature("bob", bobScores);
 
-        AbilityScores slimeScores = new AbilityScores(Dice.rollD20(), Dice.rollD20(), Dice.rollD20(), Dice.rollD20(), Dice.rollD20(), Dice.rollD20());
+        AbilityScores slimeScores = new AbilityScores(Die.D20.roll(),
+                Die.D20.roll(),
+                Die.D20.roll(),
+                Die.D20.roll(),
+                Die.D20.roll(),
+                Die.D20.roll());
         Creature slime = new Creature("slime", slimeScores);
 
-        System.out.println("Bob: " + bob.getSummary());
-        System.out.println("Slime: " + slime.getSummary());
+        System.out.println("Generated:");
+        System.out.println(bob.getSummary());
+        System.out.println(slime.getSummary());
 
         int turnsCount = 0;
+        System.out.println("======= COMBAT STARTS =======");
         while (bob.isAlive() && slime.isAlive()) {
             turnsCount++;
 
@@ -27,13 +39,14 @@ public class Main {
                 break;
             }
 
-            System.out.println("Bob: " + bob.getSummary());
-            System.out.println("Slime: " + slime.getSummary());
+            System.out.println(bob.getSummary());
+            System.out.println(slime.getSummary());
 
         }
+
         System.out.println("======= COMBAT SUMMARY =======");
         System.out.println(bob.getSummary());
         System.out.println(slime.getSummary());
-        System.out.println(turnsCount);
+        System.out.println("Total turns: %d".formatted(turnsCount));
     }
 }

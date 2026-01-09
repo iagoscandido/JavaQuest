@@ -1,11 +1,17 @@
 package br.com.sciago;
 
+import lombok.Getter;
+
+import java.util.Objects;
+
+@Getter
 public class Creature {
     private final String name;
     private final AbilityScores abilityScores;
     private int maxHp;
     private int currentHp;
     private int armourClass;
+    private Weapon equippedWeapon;
 
     public Creature(String name, AbilityScores abilityScores) {
         this.name = name;
@@ -13,18 +19,7 @@ public class Creature {
         this.maxHp = calculateMaxHp(abilityScores.constitutionModifier());
         this.currentHp = maxHp;
         this.armourClass = calculateArmourClass(abilityScores.dexterityModifier());
-    }
-
-    public int getArmourClass() {
-        return armourClass;
-    }
-
-    public int getMaxHp() {
-        return maxHp;
-    }
-
-    public int getCurrentHp() {
-        return currentHp;
+        this.equippedWeapon = Weapon.UNARMED_STRIKE;
     }
 
     private int calculateMaxHp(int modifier) {
@@ -48,7 +43,7 @@ public class Creature {
     public void attack(Creature target) {
         String attackMessage = "%s attacks %s".formatted(this.name, target.name);
         System.out.println(attackMessage);
-        int rollAttackDice = Dice.rollD20();
+        int rollAttackDice = Die.D20.roll();
         int attackScore = rollAttackDice + getAttackBonus();
 
         String attackScoreMessage = "attack score: %d (D20: %d + Mod: %d)".formatted(attackScore, rollAttackDice,
@@ -58,9 +53,17 @@ public class Creature {
         if (attackScore >= target.getArmourClass()) {
             String successMessage = "%s hits %s".formatted(this.name, target.name);
             System.out.println(successMessage);
+            int damage = calculateDamage();
+            String damageRollMessage = "damage dealt: %d (D%d: %d + %s: %d)"
+                    .formatted(damage,
+                            equippedWeapon.getDamageDie().getSides(),
+                            damage - abilityScores.getModifier(equippedWeapon.getScalingModifier()),
+                            equippedWeapon.getScalingModifier(),
+                            abilityScores.getModifier(equippedWeapon.getScalingModifier())
+                    );
 
-            int damageDealt = unarmedAttack(abilityScores.strengthModifier());
-            target.takeDamage(damageDealt);
+            System.out.println(damageRollMessage);
+            target.takeDamage(damage);
 
         } else {
             String missMessage = "%s misses %s [AC: %d]".formatted(this.name, target.name, target.getArmourClass());
@@ -68,20 +71,22 @@ public class Creature {
         }
     }
 
-    public int unarmedAttack(int damageModifier) {
-        int damage = calculateUnarmedAttack(damageModifier);
-        if (damage < 1) damage = 1;
-        return damage;
-    }
-
-    private int calculateUnarmedAttack(int damageModifier) {
-        return Math.max(0, 1 + damageModifier);
+    private int calculateDamage() {
+        int weaponDamage = this.equippedWeapon.rollDamage();
+        int damageModifier = abilityScores.getModifier(this.equippedWeapon.getScalingModifier());
+        return weaponDamage + damageModifier;
     }
 
     public void takeDamage(int damage) {
-        int rawDamage = Math.max(0, damage);
-        int damageTaken = this.currentHp - rawDamage;
-        this.currentHp = Math.clamp(damageTaken, 0, this.maxHp);
+        int damageTaken = Math.max(0, damage);
+
+        if (damageTaken == 0) {
+            damageTaken = 1;
+        }
+
+        this.currentHp -= damageTaken;
+
+        if (this.currentHp <= 0) this.currentHp = 0;
 
         String message = "%s takes damage: %d | HP: %d/%d".formatted(this.name, damageTaken, this.currentHp, this.maxHp);
         System.out.println(message);
@@ -108,5 +113,9 @@ public class Creature {
                 abilityScores.intelligence(), abilityScores.intelligenceModifier(),
                 abilityScores.wisdom(), abilityScores.wisdomModifier(),
                 abilityScores.charisma(), abilityScores.charismaModifier());
+    }
+
+    public void equip(Weapon weapon) {
+        this.equippedWeapon = Objects.isNull(weapon) ? Weapon.UNARMED_STRIKE : weapon;
     }
 }
