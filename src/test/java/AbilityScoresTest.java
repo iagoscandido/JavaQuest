@@ -1,5 +1,4 @@
-import br.com.sciago.AbilityScores;
-import org.junit.jupiter.api.BeforeEach;
+import br.com.sciago.model.AbilityScores;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -7,11 +6,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AbilityScoresTest {
-    @BeforeEach
-    public void setup() {
-        AbilityScores defaultScores = new AbilityScores(10, 10, 10, 10, 10, 10);
-    }
-
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, 21})
     void shouldThrowsExceptionWhenScoreIsInvalid(int invalidScores) {
